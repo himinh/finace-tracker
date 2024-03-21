@@ -24,21 +24,21 @@ const selectedView = ref(transactionViewOptions[1]);
     />
     <Trend
       color="red"
-      title="Income"
+      title="Expense"
       :amount="4000"
-      :last-amount="3000"
+      :last-amount="5000"
       :loading="false"
     />
     <Trend
       color="green"
-      title="Income"
+      title="Investments"
       :amount="4000"
-      :last-amount="3000"
-      :loading="true"
+      :last-amount="2000"
+      :loading="false"
     />
     <Trend
       color="red"
-      title="Income"
+      title="Saving"
       :amount="4000"
       :last-amount="3000"
       :loading="false"
