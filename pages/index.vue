@@ -1,8 +1,28 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { transactionViewOptions } from '~/constants';
+const supabase = useSupabaseClient();
+
+export interface ITransaction {
+  id: number;
+  created_at: string;
+  amount: string;
+  type: string;
+  description: string;
+  category: string;
+}
 
 const selectedView = ref(transactionViewOptions[1]);
+const {
+  data: transactions,
+  pending,
+  error,
+} = await useAsyncData('transactions', async () => {
+  const { data, error } = await supabase.from('transactions').select('*');
+
+  if (error) return [];
+
+  return data as ITransaction[];
+});
 </script>
 
 <template>
@@ -46,10 +66,11 @@ const selectedView = ref(transactionViewOptions[1]);
   </section>
 
   <section>
-    <Transaction />
-    <Transaction />
-    <Transaction />
-    <Transaction />
+    <Transaction
+      v-for="transaction in transactions"
+      :key="transaction.id"
+      :transaction="transaction"
+    />
   </section>
 </template>
 
