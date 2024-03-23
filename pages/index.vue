@@ -26,6 +26,21 @@ const {
   return data as ITransaction[];
 });
 
+const income = computed(() =>
+  transactions.value?.filter((t) => t.type === 'Income')
+);
+const expense = computed(() =>
+  transactions.value?.filter((t) => t.type === 'Expense')
+);
+const incomeCount = computed(() => income.value?.length);
+const expenseCount = computed(() => expense.value?.length);
+const incomeTotal = computed(
+  () => income.value?.reduce((a, b) => a + b.amount, 0) || 0
+);
+const expenseTotal = computed(
+  () => income.value?.reduce((a, b) => a + b.amount, 0) || 0
+);
+
 const transactionsGroupByDate = computed(() => {
   const grouped: Record<string, ITransaction[]> = {};
   for (const transaction of transactions.value!) {
@@ -53,14 +68,14 @@ const transactionsGroupByDate = computed(() => {
     <Trend
       color="green"
       title="Income"
-      :amount="4000"
+      :amount="incomeTotal"
       :last-amount="3000"
       :loading="isLoading"
     />
     <Trend
       color="red"
       title="Expense"
-      :amount="4000"
+      :amount="expenseTotal"
       :last-amount="5000"
       :loading="isLoading"
     />
@@ -78,6 +93,25 @@ const transactionsGroupByDate = computed(() => {
       :last-amount="3000"
       :loading="isLoading"
     />
+  </section>
+
+  <section class="flex justify-between mb-10">
+    <div>
+      <h2 class="text-2xl font-extrabold">Transactions</h2>
+      <div class="text-gray-500 dark:text-gray-400">
+        You have {{ incomeCount }} incomes and {{ expenseCount }} expenses this
+        period
+      </div>
+    </div>
+
+    <div>
+      <UButton
+        icon="i-heroicons-plus-circle"
+        color="white"
+        variant="solid"
+        label="Add"
+      />
+    </div>
   </section>
 
   <section v-if="!isLoading">
