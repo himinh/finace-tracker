@@ -2,20 +2,20 @@
 import type { ITransaction } from '~/pages/index.vue';
 
 const props = defineProps<{ transaction: ITransaction }>();
+const emit = defineEmits<{
+  (e: 'deleted', id: number): void;
+}>();
 const supabase = useSupabaseClient();
 const toast = useToast();
 const isLoading = ref<boolean>(false);
 
 const { currency } = useCurrency(3000);
-
 const isIncome = computed(() => props.transaction.type === 'Income');
-
 const icon = computed(() => {
   return isIncome.value
     ? 'i-heroicons-arrow-up-right'
     : 'i-heroicons-arrow-down-left';
 });
-
 const iconColor = computed(() =>
   isIncome.value ? 'text-green-600' : 'text-red-600'
 );
@@ -30,6 +30,8 @@ const deleteTransaction = async () => {
       icon: 'i-heroicons-check-circle',
       color: 'green',
     });
+
+    emit('deleted', props.transaction.id);
   } catch (error) {
     toast.add({
       title: 'Transaction deleted',

@@ -12,10 +12,12 @@ export interface ITransaction {
 }
 
 const selectedView = ref(transactionViewOptions[1]);
+
 const {
   data: transactions,
-  pending,
+  pending: isLoading,
   error,
+  refresh,
 } = await useAsyncData('transactions', async () => {
   const { data, error } = await supabase.from('transactions').select('*');
 
@@ -29,7 +31,7 @@ const transactionsGroupByDate = computed(() => {
   for (const transaction of transactions.value!) {
     const date = new Date(transaction.created_at).toISOString().split('T')[0];
 
-    if (!grouped.date) grouped[date] = [];
+    if (!grouped[date]) grouped[date] = [];
 
     grouped[date].push(transaction);
   }
@@ -53,32 +55,32 @@ const transactionsGroupByDate = computed(() => {
       title="Income"
       :amount="4000"
       :last-amount="3000"
-      :loading="false"
+      :loading="isLoading"
     />
     <Trend
       color="red"
       title="Expense"
       :amount="4000"
       :last-amount="5000"
-      :loading="false"
+      :loading="isLoading"
     />
     <Trend
       color="green"
       title="Investments"
       :amount="4000"
       :last-amount="2000"
-      :loading="false"
+      :loading="isLoading"
     />
     <Trend
       color="red"
       title="Saving"
       :amount="4000"
       :last-amount="3000"
-      :loading="false"
+      :loading="isLoading"
     />
   </section>
 
-  <section>
+  <section v-if="!isLoading">
     <div
       v-for="(transactionsOnDay, date) in transactionsGroupByDate"
       :key="date"
@@ -88,8 +90,12 @@ const transactionsGroupByDate = computed(() => {
         v-for="transaction in transactionsOnDay"
         :key="transaction.id"
         :transaction="transaction"
+        @deleted="refresh()"
       />
     </div>
+  </section>
+  <section v-else>
+    <USkeleton class="h-8 w-full mb-2" v-for="i in 4" :key="i" />
   </section>
 </template>
 
