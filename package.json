@@ -7,7 +7,8 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "seed": "node seed.mjs"
   },
   "dependencies": {
     "@nuxt/ui": "^2.14.2",
@@ -16,7 +17,10 @@
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@nuxtjs/supabase": "^1.1.7",
+    "@supabase/supabase-js": "^2.39.8",
+    "dotenv": "^16.4.5",
     "nuxt-icon": "^0.6.10",
     "zod": "^3.22.4"
   }

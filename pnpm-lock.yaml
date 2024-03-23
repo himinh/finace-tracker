@@ -19,9 +19,18 @@ dependencies:
     version: 4.3.0(vue@3.4.21)
 
 devDependencies:
+  '@faker-js/faker':
+    specifier: ^8.4.1
+    version: 8.4.1
   '@nuxtjs/supabase':
     specifier: ^1.1.7
     version: 1.1.7
+  '@supabase/supabase-js':
+    specifier: ^2.39.8
+    version: 2.39.8
+  dotenv:
+    specifier: ^16.4.5
+    version: 16.4.5
   nuxt-icon:
     specifier: ^0.6.10
     version: 0.6.10(nuxt@3.11.1)(vite@5.2.2)(vue@3.4.21)
@@ -638,6 +647,11 @@ packages:
     os: [win32]
     requiresBuild: true
     optional: true
+
+  /@faker-js/faker@8.4.1:
+    resolution: {integrity: sha512-XQ3cU+Q8Uqmrbf2e0cIC/QN43sTBSC8KF12u29Mb47tWrt2hAgBXSgpZMj4Ao8Uk0iJcU99QsOCaIL8934obCg==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0, npm: '>=6.14.13'}
+    dev: true
 
   /@fastify/busboy@2.1.1:
     resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
@@ -1685,6 +1699,20 @@ packages:
 
   /@supabase/supabase-js@2.39.7:
     resolution: {integrity: sha512-1vxsX10Uhc2b+Dv9pRjBjHfqmw2N2h1PyTg9LEfICR3x2xwE24By1MGCjDZuzDKH5OeHCsf4it6K8KRluAAEXA==}
+    dependencies:
+      '@supabase/functions-js': 2.1.5
+      '@supabase/gotrue-js': 2.62.2
+      '@supabase/node-fetch': 2.6.15
+      '@supabase/postgrest-js': 1.9.2
+      '@supabase/realtime-js': 2.9.3
+      '@supabase/storage-js': 2.5.5
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: true
+
+  /@supabase/supabase-js@2.39.8:
+    resolution: {integrity: sha512-WpiawHjseIRcCQTZbMJtHUSOepz5+M9qE1jP9BDmg8X7ehALFwgEkiKyHAu59qm/pKP2ryyQXLtu2XZNRbUarw==}
     dependencies:
       '@supabase/functions-js': 2.1.5
       '@supabase/gotrue-js': 2.62.2

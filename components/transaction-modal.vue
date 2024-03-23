@@ -7,11 +7,6 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
 }>();
 
-const isOpen = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
-});
-
 const defaultSchema = z.object({
   created_at: z.string(),
   description: z.string().optional(),
@@ -39,17 +34,30 @@ const schema = z.intersection(
   ]),
   defaultSchema
 );
-
-const state = reactive({
+const initialState = {
   type: undefined,
   amount: 0,
   created_at: undefined,
   description: undefined,
   category: undefined,
+};
+const state = reactive({ ...initialState });
+const resetState = () => {
+  Object.assign(state, initialState);
+};
+
+const isOpen = computed({
+  get: () => props.modelValue,
+  set: (value) => {
+    if (!value) resetState();
+    emit('update:modelValue', value);
+  },
 });
 
-const onSubmit = async () => {
-  console.log(state);
+type Schema = z.output<typeof schema>;
+
+const onSubmit = async (event: FormSubmitEvent<Schema>) => {
+  console.log(event.data);
 };
 </script>
 
