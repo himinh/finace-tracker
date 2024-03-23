@@ -1,22 +1,35 @@
 import type { ITransaction } from '~/interfaces/Transaction';
 
-export const useFetchTransactions = async () => {
+export const useFetchTransactions = async (
+  period: ComputedRef<{
+    from: Date;
+    to: Date;
+  }>
+) => {
   const supabase = useSupabaseClient();
 
   const {
     data: transactions,
     pending,
     refresh,
-  } = await useAsyncData('transactions', async () => {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select('*')
-      .order('created_at', { ascending: false });
+  } = await useAsyncData(
+    `transactions-${period.value.to.toDateString()}`,
+    async () => {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .gte('created_at', period.value.from.toISOString())
+        .lte('created_at', period.value.to.toISOString())
+        .order('created_at', { ascending: false });
 
-    if (error) return [];
+      if (error) return [];
 
-    return data as ITransaction[];
-  });
+      return data as ITransaction[];
+    },
+    {
+      watch: [period],
+    }
+  );
 
   const income = computed(() =>
     transactions.value?.filter((t) => t.type === 'Income')

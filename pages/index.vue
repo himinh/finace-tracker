@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { transactionViewOptions } from '~/constants';
 const selectedView = ref(transactionViewOptions[1]);
+const { current, previous } = useSelectedTimePeriod(selectedView);
 const isOpen = ref(false);
 
 const {
@@ -13,7 +14,14 @@ const {
     incomeTotal,
     expenseTotal,
   },
-} = await useFetchTransactions();
+} = await useFetchTransactions(current);
+
+const {
+  transactions: {
+    incomeTotal: prevIncomeTotal,
+    expenseTotal: prevExpenseTotal,
+  },
+} = await useFetchTransactions(current);
 </script>
 
 <template>
@@ -30,14 +38,14 @@ const {
       color="green"
       title="Income"
       :amount="incomeTotal"
-      :last-amount="3000"
+      :last-amount="prevIncomeTotal"
       :loading="pending"
     />
     <Trend
       color="red"
       title="Expense"
       :amount="expenseTotal"
-      :last-amount="5000"
+      :last-amount="prevExpenseTotal"
       :loading="pending"
     />
     <Trend
