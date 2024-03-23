@@ -20,11 +20,34 @@ const {
   error,
   refresh,
 } = await useAsyncData('transactions', async () => {
-  const { data, error } = await supabase.from('transactions').select('*');
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('*')
+    .order('created_at', { ascending: false });
 
   if (error) return [];
 
   return data as ITransaction[];
+});
+
+const transactionsGroupByDate = computed(() => {
+  const grouped: Record<string, ITransaction[]> = {};
+  for (const transaction of transactions.value!) {
+    const date = new Date(transaction.created_at).toISOString().split('T')[0];
+
+    if (!grouped[date]) grouped[date] = [];
+
+    grouped[date].push(transaction);
+  }
+
+  // const sortedKeys = Object.keys(grouped).sort().reverse();
+  // const sortedGrouped: Record<string, ITransaction[]> = {};
+
+  // for (const key of sortedKeys) {
+  //   sortedGrouped[key] = grouped[key];
+  // }
+
+  return grouped;
 });
 
 const income = computed(() =>
@@ -41,19 +64,6 @@ const incomeTotal = computed(
 const expenseTotal = computed(
   () => income.value?.reduce((a, b) => a + b.amount, 0) || 0
 );
-
-const transactionsGroupByDate = computed(() => {
-  const grouped: Record<string, ITransaction[]> = {};
-  for (const transaction of transactions.value!) {
-    const date = new Date(transaction.created_at).toISOString().split('T')[0];
-
-    if (!grouped[date]) grouped[date] = [];
-
-    grouped[date].push(transaction);
-  }
-
-  return grouped;
-});
 </script>
 
 <template>
