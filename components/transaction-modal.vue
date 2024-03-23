@@ -8,6 +8,7 @@ const emit = defineEmits<{
   (e: 'saved'): void;
 }>();
 const supabase = useSupabaseClient<any>();
+const user = useSupabaseUser();
 const { toastError, toastSuccess } = useAppToast();
 
 const defaultSchema = z.object({
@@ -43,6 +44,7 @@ const initialState = {
   created_at: undefined,
   description: undefined,
   category: undefined,
+  user_id: user.value?.id,
 };
 const state = reactive({ ...initialState });
 const resetState = () => {

@@ -74,7 +74,7 @@ const {
     </div>
 
     <div>
-      <TransactionModal v-model="isOpen" />
+      <TransactionModal v-model="isOpen" @saved="refresh()" />
 
       <UButton
         icon="i-heroicons-plus-circle"
@@ -82,7 +82,6 @@ const {
         variant="solid"
         label="Add"
         @click="isOpen = true"
-        @saved="refresh()"
       />
     </div>
   </section>
