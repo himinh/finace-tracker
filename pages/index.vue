@@ -5,7 +5,7 @@ const supabase = useSupabaseClient();
 export interface ITransaction {
   id: number;
   created_at: string;
-  amount: string;
+  amount: number;
   type: string;
   description: string;
   category: string;
@@ -22,6 +22,19 @@ const {
   if (error) return [];
 
   return data as ITransaction[];
+});
+
+const transactionsGroupByDate = computed(() => {
+  const grouped: Record<string, ITransaction[]> = {};
+  for (const transaction of transactions.value!) {
+    const date = new Date(transaction.created_at).toISOString().split('T')[0];
+
+    if (!grouped.date) grouped[date] = [];
+
+    grouped[date].push(transaction);
+  }
+
+  return grouped;
 });
 </script>
 
@@ -66,11 +79,17 @@ const {
   </section>
 
   <section>
-    <Transaction
-      v-for="transaction in transactions"
-      :key="transaction.id"
-      :transaction="transaction"
-    />
+    <div
+      v-for="(transactionsOnDay, date) in transactionsGroupByDate"
+      :key="date"
+    >
+      <DailyTransactionSummary :date="date" :transactions="transactionsOnDay" />
+      <Transaction
+        v-for="transaction in transactionsOnDay"
+        :key="transaction.id"
+        :transaction="transaction"
+      />
+    </div>
   </section>
 </template>
 
