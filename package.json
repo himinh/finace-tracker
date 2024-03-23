@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@nuxtjs/supabase": "^1.1.7",
-    "nuxt-icon": "^0.6.10"
+    "nuxt-icon": "^0.6.10",
+    "zod": "^3.22.4"
   }
 }

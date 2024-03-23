@@ -25,6 +25,9 @@ devDependencies:
   nuxt-icon:
     specifier: ^0.6.10
     version: 0.6.10(nuxt@3.11.1)(vite@5.2.2)(vue@3.4.21)
+  zod:
+    specifier: ^3.22.4
+    version: 3.22.4
 
 packages:
 
@@ -6973,3 +6976,7 @@ packages:
       archiver-utils: 5.0.2
       compress-commons: 6.0.2
       readable-stream: 4.5.2
+
+  /zod@3.22.4:
+    resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
+    dev: true

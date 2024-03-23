@@ -12,6 +12,7 @@ export interface ITransaction {
 }
 
 const selectedView = ref(transactionViewOptions[1]);
+const isOpen = ref(false);
 
 const {
   data: transactions,
@@ -105,11 +106,14 @@ const transactionsGroupByDate = computed(() => {
     </div>
 
     <div>
+      <TransactionModal v-model="isOpen" />
+
       <UButton
         icon="i-heroicons-plus-circle"
         color="white"
         variant="solid"
         label="Add"
+        @click="isOpen = true"
       />
     </div>
   </section>
