@@ -21,7 +21,7 @@ const {
     incomeTotal: prevIncomeTotal,
     expenseTotal: prevExpenseTotal,
   },
-} = await useFetchTransactions(current);
+} = await useFetchTransactions(previous);
 </script>
 
 <template>

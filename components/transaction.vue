@@ -9,7 +9,7 @@ const supabase = useSupabaseClient();
 const toast = useToast();
 const isLoading = ref<boolean>(false);
 
-const { currency } = useCurrency(3000);
+const { currency } = useCurrency(props.transaction.amount);
 const isIncome = computed(() => props.transaction.type === 'Income');
 const icon = computed(() => {
   return isIncome.value
