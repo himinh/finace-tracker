@@ -1,68 +1,19 @@
 <script setup lang="ts">
 import { transactionViewOptions } from '~/constants';
-const supabase = useSupabaseClient();
-
-export interface ITransaction {
-  id: number;
-  created_at: string;
-  amount: number;
-  type: string;
-  description: string;
-  category: string;
-}
-
 const selectedView = ref(transactionViewOptions[1]);
 const isOpen = ref(false);
 
 const {
-  data: transactions,
-  pending: isLoading,
+  pending,
   refresh,
-} = await useAsyncData('transactions', async () => {
-  const { data, error } = await supabase
-    .from('transactions')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) return [];
-
-  return data as ITransaction[];
-});
-
-const transactionsGroupByDate = computed(() => {
-  const grouped: Record<string, ITransaction[]> = {};
-  for (const transaction of transactions.value!) {
-    const date = new Date(transaction.created_at).toISOString().split('T')[0];
-
-    if (!grouped[date]) grouped[date] = [];
-
-    grouped[date].push(transaction);
-  }
-
-  // const sortedKeys = Object.keys(grouped).sort().reverse();
-  // const sortedGrouped: Record<string, ITransaction[]> = {};
-
-  // for (const key of sortedKeys) {
-  //   sortedGrouped[key] = grouped[key];
-  // }
-
-  return grouped;
-});
-
-const income = computed(() =>
-  transactions.value?.filter((t) => t.type === 'Income')
-);
-const expense = computed(() =>
-  transactions.value?.filter((t) => t.type === 'Expense')
-);
-const incomeCount = computed(() => income.value?.length);
-const expenseCount = computed(() => expense.value?.length);
-const incomeTotal = computed(
-  () => income.value?.reduce((a, b) => a + b.amount, 0) || 0
-);
-const expenseTotal = computed(
-  () => income.value?.reduce((a, b) => a + b.amount, 0) || 0
-);
+  transactions: {
+    grouped: { byDate: transactionsGroupByDate },
+    incomeCount,
+    expenseCount,
+    incomeTotal,
+    expenseTotal,
+  },
+} = await useFetchTransactions();
 </script>
 
 <template>
@@ -80,28 +31,28 @@ const expenseTotal = computed(
       title="Income"
       :amount="incomeTotal"
       :last-amount="3000"
-      :loading="isLoading"
+      :loading="pending"
     />
     <Trend
       color="red"
       title="Expense"
       :amount="expenseTotal"
       :last-amount="5000"
-      :loading="isLoading"
+      :loading="pending"
     />
     <Trend
       color="green"
       title="Investments"
       :amount="4000"
       :last-amount="2000"
-      :loading="isLoading"
+      :loading="pending"
     />
     <Trend
       color="red"
       title="Saving"
       :amount="4000"
       :last-amount="3000"
-      :loading="isLoading"
+      :loading="pending"
     />
   </section>
 
@@ -128,7 +79,7 @@ const expenseTotal = computed(
     </div>
   </section>
 
-  <section v-if="!isLoading">
+  <section v-if="!pending">
     <div
       v-for="(transactionsOnDay, date) in transactionsGroupByDate"
       :key="date"

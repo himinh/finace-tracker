@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ITransaction } from '~/pages/index.vue';
+import type { ITransaction } from '~/interfaces/Transaction';
 
 const props = defineProps<{ transaction: ITransaction }>();
 const emit = defineEmits<{
