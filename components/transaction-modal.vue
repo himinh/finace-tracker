@@ -8,7 +8,7 @@ const emit = defineEmits<{
   (e: 'saved'): void;
 }>();
 const supabase = useSupabaseClient<any>();
-const toast = useToast();
+const { toastError, toastSuccess } = useAppToast();
 
 const defaultSchema = z.object({
   created_at: z.string(),
@@ -66,12 +66,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
     const { error } = await supabase.from('transactions').upsert(event.data);
 
     if (!error) {
-      toast.add({
-        title: 'Transaction added',
-        icon: 'i-heroicons-check-circle',
-        color: 'green',
-      });
-
+      toastSuccess({ title: 'Transaction added' });
       isOpen.value = false;
       emit('saved');
 
@@ -80,11 +75,9 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
 
     throw error;
   } catch (e: any) {
-    toast.add({
-      title: 'Transaction added',
+    toastError({
+      title: 'Error adding transaction',
       description: e.message,
-      icon: 'i-heroicons-exclamation-circle',
-      color: 'red',
     });
   } finally {
     isLoading.value = false;

@@ -4,7 +4,7 @@ import { z } from 'zod';
 const supabase = useSupabaseClient();
 const success = ref<boolean>(false);
 const pending = ref<boolean>(false);
-const toast = useToast();
+const { toastError } = useAppToast();
 
 useRedirectIfAuthenticated();
 
@@ -25,21 +25,17 @@ const onSignIn = async () => {
     });
 
     if (error) {
-      toast.add({
+      toastError({
         title: 'Error authenticating',
         description: error.message,
-        color: 'red',
-        icon: 'i-heroicons-exclamation-circle',
       });
     } else {
       success.value = true;
     }
   } catch (error) {
-    toast.add({
+    toastError({
       title: 'Error authenticating',
       description: error.message,
-      color: 'red',
-      icon: 'i-heroicons-exclamation-circle',
     });
   } finally {
     pending.value = false;
