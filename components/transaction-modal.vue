@@ -5,7 +5,10 @@ import { categories, transactionTypes } from '~/constants';
 const props = defineProps<{ modelValue: boolean }>();
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
+  (e: 'saved'): void;
 }>();
+const supabase = useSupabaseClient<any>();
+const toast = useToast();
 
 const defaultSchema = z.object({
   created_at: z.string(),
@@ -56,8 +59,36 @@ const isOpen = computed({
 
 type Schema = z.output<typeof schema>;
 
+const isLoading = ref<boolean>(false);
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
-  console.log(event.data);
+  isLoading.value = true;
+  try {
+    const { error } = await supabase.from('transactions').upsert(event.data);
+
+    if (!error) {
+      toast.add({
+        title: 'Transaction added',
+        icon: 'i-heroicons-check-circle',
+        color: 'green',
+      });
+
+      isOpen.value = false;
+      emit('saved');
+
+      return;
+    }
+
+    throw error;
+  } catch (e: any) {
+    toast.add({
+      title: 'Transaction added',
+      description: e.message,
+      icon: 'i-heroicons-exclamation-circle',
+      color: 'red',
+    });
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 
@@ -96,13 +127,8 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
           />
         </UFormGroup>
 
-        <UFormGroup
-          v-model="state.description"
-          label="Description"
-          hint="Optional"
-          name="description"
-        >
-          <UInput placeholder="Description" />
+        <UFormGroup label="Description" hint="Optional" name="description">
+          <UInput v-model="state.description" placeholder="Description" />
         </UFormGroup>
 
         <UFormGroup
@@ -118,7 +144,13 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
           />
         </UFormGroup>
 
-        <UButton type="submit" color="black" variant="solid" label="Save" />
+        <UButton
+          type="submit"
+          color="black"
+          variant="solid"
+          label="Save"
+          :loading="isLoading"
+        />
       </UForm>
     </UCard>
   </UModal>

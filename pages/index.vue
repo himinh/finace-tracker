@@ -17,7 +17,6 @@ const isOpen = ref(false);
 const {
   data: transactions,
   pending: isLoading,
-  error,
   refresh,
 } = await useAsyncData('transactions', async () => {
   const { data, error } = await supabase
@@ -124,6 +123,7 @@ const expenseTotal = computed(
         variant="solid"
         label="Add"
         @click="isOpen = true"
+        @saved="refresh()"
       />
     </div>
   </section>
