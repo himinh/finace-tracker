@@ -4,6 +4,7 @@ import type { ITransaction } from '~/interfaces/Transaction';
 const props = defineProps<{ transaction: ITransaction }>();
 const emit = defineEmits<{
   (e: 'deleted', id: number): void;
+  (e: 'edited'): void;
 }>();
 const supabase = useSupabaseClient();
 const { toastError, toastSuccess } = useAppToast();
@@ -19,6 +20,7 @@ const icon = computed(() => {
 const iconColor = computed(() =>
   isIncome.value ? 'text-green-600' : 'text-red-600'
 );
+const isOpen = ref<boolean>(false);
 const deleteTransaction = async () => {
   isLoading.value = true;
 
@@ -43,9 +45,7 @@ const items = [
     {
       label: 'Edit',
       icon: 'i-heroicons-pencil-square-20-solid',
-      click: () => {
-        console.log('Edit');
-      },
+      click: () => (isOpen.value = true),
     },
   ],
   [
@@ -84,6 +84,12 @@ const items = [
             variant="ghost"
             trailing-icon="i-heroicons-ellipsis-horizontal"
             :loading="isLoading"
+          />
+
+          <TransactionModal
+            v-model="isOpen"
+            :transaction="transaction"
+            @saved="emit('edited')"
           />
         </UDropdown>
       </div>

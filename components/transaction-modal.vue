@@ -2,14 +2,23 @@
 import { z } from 'zod';
 import type { FormSubmitEvent } from '#ui/types';
 import { categories, transactionTypes } from '~/constants';
-const props = defineProps<{ modelValue: boolean }>();
-const emit = defineEmits<{
+import type { ITransaction } from '~/interfaces/Transaction';
+interface IProp {
+  modelValue: boolean;
+  transaction?: ITransaction;
+}
+interface IEmit {
   (e: 'update:modelValue', value: boolean): void;
   (e: 'saved'): void;
-}>();
+}
+
+const props = defineProps<IProp>();
+const emit = defineEmits<IEmit>();
 const supabase = useSupabaseClient<any>();
 const user = useSupabaseUser();
 const { toastError, toastSuccess } = useAppToast();
+
+const isEditing = computed(() => !!props.transaction);
 
 const defaultSchema = z.object({
   created_at: z.string(),
@@ -38,14 +47,25 @@ const schema = z.intersection(
   ]),
   defaultSchema
 );
-const initialState = {
-  type: undefined,
-  amount: 0,
-  created_at: undefined,
-  description: undefined,
-  category: undefined,
-  user_id: user.value?.id,
-};
+
+const initialState = isEditing.value
+  ? {
+      type: props.transaction?.type,
+      amount: props.transaction?.amount,
+      created_at: props.transaction?.created_at.split('T')[0],
+      description: props.transaction?.description,
+      category: props.transaction?.category,
+      user_id: user.value?.id,
+    }
+  : {
+      type: undefined,
+      amount: 0,
+      created_at: undefined,
+      description: undefined,
+      category: undefined,
+      user_id: user.value?.id,
+    };
+
 const state = reactive({ ...initialState });
 const resetState = () => {
   Object.assign(state, initialState);
@@ -65,7 +85,9 @@ const isLoading = ref<boolean>(false);
 const onSubmit = async (event: FormSubmitEvent<Schema>) => {
   isLoading.value = true;
   try {
-    const { error } = await supabase.from('transactions').upsert(event.data);
+    const { error } = await supabase
+      .from('transactions')
+      .upsert({ ...event.data, id: props.transaction?.id });
 
     if (!error) {
       toastSuccess({ title: 'Transaction added' });
@@ -90,7 +112,9 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
 <template>
   <UModal v-model="isOpen">
     <UCard>
-      <template #header> Add Transaction </template>
+      <template #header>
+        {{ isEditing ? 'Edit' : 'Add' }} Transaction
+      </template>
 
       <UForm
         @submit="onSubmit"
@@ -102,6 +126,7 @@ const onSubmit = async (event: FormSubmitEvent<Schema>) => {
           <USelect
             v-model="state.type"
             :options="transactionTypes"
+            :disabled="isEditing"
             placeholder="Select the transaction type"
           />
         </UFormGroup>
