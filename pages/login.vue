@@ -6,6 +6,8 @@ const success = ref<boolean>(false);
 const pending = ref<boolean>(false);
 const { toastError } = useAppToast();
 
+const redirectUrl = useRuntimeConfig().public.baseUrl;
+
 useRedirectIfAuthenticated();
 
 const schema = z.object({
@@ -18,16 +20,16 @@ const onSignIn = async () => {
   pending.value = true;
   try {
     const { error } = await supabase.auth.signInWithOtp({
-      email: state.email,
+      email: state.email!,
       options: {
-        emailRedirectTo: 'http://localhost:3000',
+        emailRedirectTo: `${redirectUrl}/confirm`,
       },
     });
 
     if (error) throw error;
 
     success.value = true;
-  } catch (error) {
+  } catch (error: any) {
     toastError({
       title: 'Error authenticating',
       description: error.message,
