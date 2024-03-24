@@ -24,14 +24,9 @@ const onSignIn = async () => {
       },
     });
 
-    if (error) {
-      toastError({
-        title: 'Error authenticating',
-        description: error.message,
-      });
-    } else {
-      success.value = true;
-    }
+    if (error) throw error;
+
+    success.value = true;
   } catch (error) {
     toastError({
       title: 'Error authenticating',
