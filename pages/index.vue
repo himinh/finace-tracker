@@ -15,8 +15,12 @@ const {
     grouped: { byDate: transactionsGroupByDate },
     incomeCount,
     expenseCount,
+    investmentCount,
+    savingCount,
     incomeTotal,
     expenseTotal,
+    investmentsTotal,
+    savingTotal,
   },
 } = await useFetchTransactions(current);
 
@@ -24,6 +28,9 @@ const {
   transactions: {
     incomeTotal: prevIncomeTotal,
     expenseTotal: prevExpenseTotal,
+
+    investmentsTotal: prevInvestmentsTotal,
+    savingTotal: prevSavingTotal,
   },
 } = await useFetchTransactions(previous);
 </script>
@@ -55,15 +62,15 @@ const {
     <Trend
       color="green"
       title="Investments"
-      :amount="4000"
-      :last-amount="2000"
+      :amount="investmentsTotal"
+      :last-amount="prevInvestmentsTotal"
       :loading="pending"
     />
     <Trend
       color="red"
       title="Saving"
-      :amount="4000"
-      :last-amount="3000"
+      :amount="savingTotal"
+      :last-amount="prevSavingTotal"
       :loading="pending"
     />
   </section>
@@ -72,8 +79,8 @@ const {
     <div>
       <h2 class="text-2xl font-extrabold">Transactions</h2>
       <div class="text-gray-500 dark:text-gray-400">
-        You have {{ incomeCount }} incomes and {{ expenseCount }} expenses this
-        period
+        You have {{ investmentCount }} investments, {{ savingCount }} savings,
+        {{ incomeCount }} incomes and {{ expenseCount }} expenses this period
       </div>
     </div>
 
